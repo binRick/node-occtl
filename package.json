@@ -1,0 +1,24 @@
+{
+  "name": "node-occtl",
+  "version": "1.0.0",
+  "description": "Openconnect node controller via occtl socket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/binRick/node-occtl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/binRick/node-occtl/issues"
+  },
+  "homepage": "https://github.com/binRick/node-occtl#readme",
+  "dependencies": {
+    "async": "^2.6.2",
+    "chalk": "^2.4.2",
+    "underscore": "^1.9.1"
+  }
+}
