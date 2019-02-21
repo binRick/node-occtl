@@ -44,7 +44,7 @@ var Interface = {
                 l('childProc exited w code', code);
             if (code == 0) {
                 try {
-                    outData = fixOpenConnectInvalidJson(outData);
+                    outData = _fixOpenConnectInvalidJson(outData);
                     l(outData);
                     outData = JSON.parse(outData);
                     if (this.debug)
@@ -67,31 +67,28 @@ var Interface = {
 
 
 //occtl creates invalid json.. sloppy attempt to fix it up...
-var fixOpenConnectInvalidJson = function(outData) {
-    outData = outData.trim();
-    outDataNew = '';
-    _.each(outData.split("\n"), function(line) {
-        line = line.trim();
-        if (line[line.length - 1] != ',' && line.split('"').length > 2)
-            line += ',';
-        outDataNew += line + "\n";
-    });
-    outData = outDataNew;
-    var outDataLines = outData.split("\n").filter(function(line) {
-        return line.length;
-    });
-    var lastJsonLine = outDataLines[outDataLines.length - 2];
-    if (lastJsonLine.length > 2 && lastJsonLine[lastJsonLine.length - 1] == ',') {
-        lastJsonLine = lastJsonLine.slice(0, lastJsonLine.length - 1);
-        outDataLines[outDataLines.length - 2] = lastJsonLine;
-    } else {
-        var lastJsonLine = outDataLines[outDataLines.length - 3];
-        if (lastJsonLine.length > 2 && lastJsonLine[lastJsonLine.length - 1] == ',') {
-            lastJsonLine = lastJsonLine.slice(0, lastJsonLine.length - 1);
-            outDataLines[outDataLines.length - 3] = lastJsonLine;
+var _fixOpenConnectInvalidJson = function(outData) {
+    var outLines = outData.split('\n'),
+        fixedLines = [],
+        prevLine = false;
+    _.each(outLines, function(curLine) {
+        curLine = curLine.trim();
+        if (prevLine) {
+            if (curLine.length <= 2 && prevLine && prevLine.length > 2) {
+                var ll = fixedLines[fixedLines.length - 1];
+                if (ll[ll.length - 1] == ',') {
+                    ll = ll.slice(0, ll.length - 1);
+                    fixedLines[fixedLines.length - 1] = ll;
+                }
+            }
+            if (curLine.length > 2 && curLine[curLine.length - 1] != ',') {
+                curLine += ',';
+            }
         }
-    }
-    outData = outDataLines.join('\n');
+        fixedLines.push(curLine);
+        prevLine = curLine;
+    });
+    outData = fixedLines.join("\n");
     return outData;
-};
+}
 module.exports = Interface;
