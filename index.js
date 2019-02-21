@@ -44,7 +44,9 @@ var Interface = {
                 l('childProc exited w code', code);
             if (code == 0) {
                 try {
-                    outData = JSON.parse(fixOpenConnectInvalidJson(outData));
+                    outData = fixOpenConnectInvalidJson(outData);
+                    l(outData);
+                    outData = JSON.parse(outData);
                     if (this.debug)
                         l(pj.render(outData));
                     _cb(null, outData);
@@ -59,13 +61,12 @@ var Interface = {
             }
         });
     },
-
-
 };
 
 
 
 
+//occtl creates invalid json.. sloppy attempt to fix it up...
 var fixOpenConnectInvalidJson = function(outData) {
     outData = outData.trim();
     outDataNew = '';
@@ -80,11 +81,16 @@ var fixOpenConnectInvalidJson = function(outData) {
         return line.length;
     });
     var lastJsonLine = outDataLines[outDataLines.length - 2];
-    if (lastJsonLine[lastJsonLine.length - 1] == ',')
+    if (lastJsonLine.length > 2 && lastJsonLine[lastJsonLine.length - 1] == ',') {
         lastJsonLine = lastJsonLine.slice(0, lastJsonLine.length - 1);
-
-    outDataLines[outDataLines.length - 2] = lastJsonLine;
-
+        outDataLines[outDataLines.length - 2] = lastJsonLine;
+    } else {
+        var lastJsonLine = outDataLines[outDataLines.length - 3];
+        if (lastJsonLine.length > 2 && lastJsonLine[lastJsonLine.length - 1] == ',') {
+            lastJsonLine = lastJsonLine.slice(0, lastJsonLine.length - 1);
+            outDataLines[outDataLines.length - 3] = lastJsonLine;
+        }
+    }
     outData = outDataLines.join('\n');
     return outData;
 };
