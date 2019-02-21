@@ -19,6 +19,8 @@
   "dependencies": {
     "async": "^2.6.2",
     "chalk": "^2.4.2",
+    "parse-spawn-args": "^1.0.2",
+    "prettyjson": "^1.2.1",
     "underscore": "^1.9.1"
   }
 }
